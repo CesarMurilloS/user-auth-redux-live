@@ -6,35 +6,24 @@ import {auth, provider} from './firebase.js';
 
 import {useDispatch, useSelector} from 'react-redux';
 
-import {setActiveUser, setUserLogoutState, selectUserEmail, selectUserName}  from './features/userSlice';
+import {setSignIn, setSignOut, selectUser}  from './features/userSlice';
+import useUser from './features/helpers/useUser';
 
 function App() {
-  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
-  const userName = useSelector(selectUserName);
-  const userEmail = useSelector(selectUserEmail);
-
-  const handleSignIn = () => {
-    auth.signInWithPopup(provider).then((result)=>{
-      dispatch(setActiveUser({
-        userName: result.user.displayName,
-        userEmail: result.user.email
-      }))
-    })
-  }
-
-  const handleSignOut = () => {
-    auth.signOut().then(()=>{
-      dispatch(setUserLogoutState())
-    }).catch((err) => alert(err.message))
-  }
+  const {
+    handleSignIn,
+    handleSignOut
+  } = useUser() 
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        User: {user?.displayName}
         {
-          userName ? (
+          user ? (
             <button onClick={handleSignOut}>Sign Out</button>
           ) : 
           (
